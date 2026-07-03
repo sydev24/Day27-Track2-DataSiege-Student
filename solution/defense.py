@@ -21,13 +21,13 @@ def check_data_batch(payload, ctx):
     
     b = ctx.baseline
     reasons = []
-    if res["row_count"] < b["row_count_min"] * 0.97 or res["row_count"] > b["row_count_max"] * 1.03:
+    if res["row_count"] < b["row_count_min"] or res["row_count"] > b["row_count_max"]:
         reasons.append(f"row_count out of bounds: {res['row_count']}")
-    if res["null_rate"].get("customer_id", 0) > b["null_rate_max"] * 1.1:
+    if res["null_rate"].get("customer_id", 0) > b["null_rate_max"]:
         reasons.append(f"null_rate too high: {res['null_rate'].get('customer_id')}")
-    if res["mean_amount"] < b["mean_amount_min"] * 0.97 or res["mean_amount"] > b["mean_amount_max"] * 1.03:
+    if res["mean_amount"] < b["mean_amount_min"] or res["mean_amount"] > b["mean_amount_max"]:
         reasons.append(f"mean_amount out of bounds: {res['mean_amount']}")
-    if res["staleness_min"] > b["staleness_min_max"] * 1.1:
+    if res["staleness_min"] > b["staleness_min_max"]:
         reasons.append(f"staleness too high: {res['staleness_min']}")
         
     if reasons:
@@ -44,7 +44,7 @@ def check_contract_checkpoint(payload, ctx):
     reasons = []
     if res.get("violations"):
         reasons.append(f"violations: {res['violations']}")
-    if res.get("freshness_delay_min", 0) > b["freshness_delay_max_min"] * 1.1:
+    if res.get("freshness_delay_min", 0) > b["freshness_delay_max_min"]:
         reasons.append(f"freshness delay too high: {res['freshness_delay_min']}")
         
     if reasons:
@@ -59,7 +59,7 @@ def check_lineage_run(payload, ctx):
     
     b = ctx.baseline
     reasons = []
-    if res.get("duration_ms", 0) > b["lineage_duration_ms_max"] * 1.1:
+    if res.get("duration_ms", 0) > b["lineage_duration_ms_max"]:
         reasons.append(f"duration too high: {res['duration_ms']}")
         
     if res.get("actual_downstream_count", 1) == 0:
@@ -87,7 +87,7 @@ def check_feature_materialization(payload, ctx):
         return Verdict(alert=False, pillar="ai_infra")
     
     b = ctx.baseline
-    if res.get("mean_shift_sigma", 0) > b["feature_mean_shift_sigma_max"] * 1.1:
+    if res.get("mean_shift_sigma", 0) > b["feature_mean_shift_sigma_max"]:
         return Verdict(alert=True, reason=f"feature drift: {res['mean_shift_sigma']}", pillar="ai_infra")
     return Verdict(alert=False, pillar="ai_infra")
 
@@ -99,9 +99,9 @@ def check_embedding_batch(payload, ctx):
     
     b = ctx.baseline
     reasons = []
-    if res.get("centroid_shift", 0) > b["embedding_centroid_shift_max"] * 1.1:
+    if res.get("centroid_shift", 0) > b["embedding_centroid_shift_max"]:
         reasons.append(f"centroid shift too high: {res['centroid_shift']}")
-    if res.get("avg_doc_age_days", 0) > b["corpus_avg_doc_age_days_max"] * 1.1:
+    if res.get("avg_doc_age_days", 0) > b["corpus_avg_doc_age_days_max"]:
         reasons.append(f"doc age too high: {res['avg_doc_age_days']}")
         
     if reasons:
